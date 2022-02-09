@@ -17,7 +17,6 @@ from nni.utils import merge_parameter
 from torchvision import datasets, transforms
 import pandas as pd
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score, classification_report
-import random
 
 
 from datasets import load_dataset, DatasetDict, Dataset
@@ -31,22 +30,6 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer, BertTokenizerFast
 
 logger = logging.getLogger('sa_bert')
-
-def compute_metrics(pred):
-    labels = pred.label_ids
-    preds = pred.predictions.argmax(-1)
-    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='weighted', labels=np.unique(pred.label_ids))
-    acc = accuracy_score(labels, preds)
-    metrics =  {
-                'accuracy': acc,
-                'f1': f1,
-                'precision': precision,
-                'recall': recall
-                }
-    
-    nni.report_intermediate_result(metrics['f1'])
-    
-    return metrics
 
 # Create The Dataset Class.
 class CommentsDataset(torch.utils.data.Dataset):
@@ -82,6 +65,67 @@ class CommentsDataset(torch.utils.data.Dataset):
         }
 
 
+class hf_trainer_wrapper:
+    def __init__(self, train_values, train_labels, test_values, test_labels, model_ckpt, num_labels, training_args):
+
+# change to values in the constructor
+# extract the tolenizer to external util
+# compute-metrcis : weighted, micro, macro
+
+        tokenizer = BertTokenizerFast.from_pretrained(model_ckpt)
+        
+        train_set_dataset = CommentsDataset(
+            train_values,
+            train_labels,
+            tokenizer)
+
+
+        test_set_dataset = CommentsDataset(
+            test_values,
+            test_labels,
+            tokenizer)
+
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_ckpt, num_labels=num_labels)
+        
+        self.metrics_history = []
+        
+        self.trainer = Trainer(
+            model=self.model,
+            args=training_args, 
+#            train_dataset=self.tokenized_datasets["train"], 
+#            eval_dataset=self.tokenized_datasets["test"],
+            train_dataset = train_set_dataset,
+            eval_dataset = test_set_dataset,
+            compute_metrics=self.compute_metrics,
+        )
+        
+
+    
+    def compute_metrics(self, pred):
+        labels = pred.label_ids
+        preds = pred.predictions.argmax(-1)
+        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='weighted', labels=np.unique(pred.label_ids))
+        acc = accuracy_score(labels, preds)
+        metrics =  {
+                    'accuracy': acc,
+                    'f1': f1,
+                    'precision': precision,
+                    'recall': recall
+                    }
+        self.metrics_history.append(metrics)
+        print(metrics['f1'])
+        nni.report_intermediate_result(metrics)
+        # nni.report_intermediate_result(metrics['f1'])
+        # nni.report_intermediate_result(metrics['precision'])
+        return metrics
+    
+    def train(self,):
+        self.trainer.train()
+
+    def get_metrics_history(self,):
+        return self.metrics_history
+      
+
 def main(args):
     use_cuda = not args['no_cuda'] and torch.cuda.is_available()
 
@@ -93,54 +137,53 @@ def main(args):
 
     data_dir = args['data_dir']
 
+    print(1)
+    logger.debug('1')
+
     train_df = pd.read_csv('./data/for_sentiment/train_token_df.gz').head(100)
     test_df = pd.read_csv('./data/for_sentiment/val_token_df.gz').head(10)
 
+    print(2)
+    logger.debug('2')
+
     MODEL_CKPT = "onlplab/alephbert-base"
+    #MODEL_CKPT = "avichr/heBERT"
     TEXT_COLUMN_NAME = "comment"
     LABEL_COLUMN_NAME = "label"
     NUM_LABELS = 3
 
-    tokenizer = BertTokenizerFast.from_pretrained(MODEL_CKPT)
-
-    train_set_dataset = CommentsDataset(
-        train_df[TEXT_COLUMN_NAME],
-        train_df[LABEL_COLUMN_NAME],
-        tokenizer)
-    
-    test_set_dataset = CommentsDataset(
-        test_df[TEXT_COLUMN_NAME],
-        test_df[LABEL_COLUMN_NAME],
-        tokenizer)
-
+    logger.debug('3')
     training_args = TrainingArguments(
         'MODEL_CKPT__',
         evaluation_strategy='epoch',
         save_strategy='epoch',
         load_best_model_at_end=True,
         metric_for_best_model='f1',
-        num_train_epochs=10,
-        per_device_train_batch_size = 16,
+        num_train_epochs=1,
+        per_device_train_batch_size = 8,
         per_device_eval_batch_size  = 1,
         warmup_steps                = 10,
         weight_decay                = 0.01,
-        fp16                        = True,
+        # fp16                        = True,
         logging_strategy            = 'epoch',
     )
 
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_CKPT, num_labels=NUM_LABELS)
-
-    trainer = Trainer(
-            model=model,
-            args=training_args, 
-            train_dataset = train_set_dataset,
-            eval_dataset = test_set_dataset,
-            compute_metrics=compute_metrics,
+    logger.debug('4')
+    hf_trainer = hf_trainer_wrapper(
+        train_df[TEXT_COLUMN_NAME],
+        train_df[LABEL_COLUMN_NAME],
+        test_df[TEXT_COLUMN_NAME],
+        test_df[LABEL_COLUMN_NAME],
+        MODEL_CKPT,
+        NUM_LABELS,
+        training_args,
     )
 
-    trainer.train()
+    logger.debug('5')
+    hf_trainer.train()
 
-    nni.report_final_result(random.randrange(1,100))
+    logger.debug('6')
+    nni.report_final_result(hf_trainer.get_metrics_history()[0])
 
 def get_params():
     # Training settings
@@ -173,8 +216,6 @@ def get_params():
 if __name__ == '__main__':
     try:
         # get parameters form tuner
-        print('torch.cuda.is_available()')
-        print(torch.cuda.is_available())
         tuner_params = nni.get_next_parameter()
         logger.debug(tuner_params)
         params = vars(merge_parameter(get_params(), tuner_params))
