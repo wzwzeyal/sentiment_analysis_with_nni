@@ -162,7 +162,7 @@ def main(args):
             compute_metrics=compute_metrics,
     )
 
-    trainer.train()
+    # trainer.train()
 
     nni.report_final_result(best_metric * 100)
 
