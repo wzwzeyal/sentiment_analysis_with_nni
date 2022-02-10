@@ -110,7 +110,8 @@ def main(args):
     train_df = pd.read_csv('./data/for_sentiment/train_token_df.gz').head(100)
     test_df = pd.read_csv('./data/for_sentiment/val_token_df.gz').head(10)
 
-    MODEL_CKPT = "onlplab/alephbert-base"
+    # MODEL_CKPT = "onlplab/alephbert-base"
+    MODEL_CKPT = args["model_ckpt"]
     TEXT_COLUMN_NAME = "comment"
     LABEL_COLUMN_NAME = "label"
     NUM_LABELS = 3
@@ -137,7 +138,8 @@ def main(args):
         per_device_train_batch_size = 8,
         per_device_eval_batch_size  = 1,
         warmup_steps                = 10,
-        weight_decay                = 0.01,
+        # weight_decay                = 0.01,
+        weight_decay                = args['weight_decay'],
         fp16                        = True,
         logging_strategy            = 'epoch',
     )
