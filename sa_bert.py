@@ -107,8 +107,8 @@ def main(args):
 
     data_dir = args['data_dir']
 
-    train_df = pd.read_csv('./data/for_sentiment/train_token_df.gz').head(100)
-    test_df = pd.read_csv('./data/for_sentiment/val_token_df.gz').head(10)
+    train_df = pd.read_csv('./data/for_sentiment/train_token_df.gz')#.head(100)
+    test_df = pd.read_csv('./data/for_sentiment/val_token_df.gz')#.head(10)
 
     # MODEL_CKPT = "onlplab/alephbert-base"
     MODEL_CKPT = args["model_ckpt"]
