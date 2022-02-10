@@ -89,7 +89,7 @@ class CommentsDataset(torch.utils.data.Dataset):
 
 def main(args):
 
-    nni.report_intermediate_result(10.1234)
+    # nni.report_intermediate_result(10.1234)
 
     use_cuda = not args['no_cuda'] and torch.cuda.is_available()
 
@@ -98,9 +98,9 @@ def main(args):
     device = torch.device("cuda" if use_cuda else "cpu")
 
     if torch.cuda.is_available():
-        nni.report_intermediate_result(15.1234)
+        # nni.report_intermediate_result(15.1234)
     else:
-        nni.report_intermediate_result(-5.1234)
+        # nni.report_intermediate_result(-5.1234)
     
 
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
@@ -117,11 +117,11 @@ def main(args):
     LABEL_COLUMN_NAME = "label"
     NUM_LABELS = 3
 
-    nni.report_intermediate_result(20.1234)
+    # nni.report_intermediate_result(20.1234)
 
     tokenizer = BertTokenizerFast.from_pretrained(MODEL_CKPT)
 
-    nni.report_intermediate_result(21.1234)
+    # nni.report_intermediate_result(21.1234)
 
     train_set_dataset = CommentsDataset(
         train_df[TEXT_COLUMN_NAME],
@@ -151,7 +151,7 @@ def main(args):
 
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_CKPT, num_labels=NUM_LABELS)
 
-    nni.report_intermediate_result(22.1234)
+    # nni.report_intermediate_result(22.1234)
 
     trainer = Trainer(
             model=model,
@@ -202,10 +202,10 @@ if __name__ == '__main__':
         print(tuner_params)
         params = vars(merge_parameter(get_params(), tuner_params))
         print(params)
-        nni.report_intermediate_result(5.1234)
+        # nni.report_intermediate_result(5.1234)
         main(params)
     except Exception as exception:
         print(exception)
-        nni.report_intermediate_result(-10)
+        nni.report_intermediate_result(-10.1234)
         logger.exception(exception)
         raise
