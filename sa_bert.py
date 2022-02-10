@@ -49,7 +49,7 @@ def compute_metrics(pred):
     
     if metrics['f1'] > best_metric:
         best_metric = metrics['f1']
-        
+
     nni.report_intermediate_result(metrics['f1'] * 100)
     
     return metrics
@@ -98,10 +98,10 @@ def main(args):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    if torch.cuda.is_available():
-        nni.report_intermediate_result(15.1234)
-    else:
-        nni.report_intermediate_result(-5.1234)
+    # if torch.cuda.is_available():
+    #     nni.report_intermediate_result(15.1234)
+    # else:
+    #     nni.report_intermediate_result(-5.1234)
     
 
     # kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
