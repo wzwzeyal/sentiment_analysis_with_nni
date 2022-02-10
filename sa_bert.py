@@ -44,7 +44,7 @@ def compute_metrics(pred):
                 'recall': recall
                 }
     
-    nni.report_intermediate_result(metrics['f1'])
+    nni.report_intermediate_result(metrics['f1'] * 100)
     
     return metrics
 
