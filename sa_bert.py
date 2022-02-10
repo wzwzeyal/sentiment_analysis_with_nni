@@ -133,7 +133,7 @@ def main(args):
         save_strategy='epoch',
         load_best_model_at_end=True,
         metric_for_best_model='f1',
-        num_train_epochs=10,
+        num_train_epochs=3,
         per_device_train_batch_size = 8,
         per_device_eval_batch_size  = 1,
         warmup_steps                = 10,
@@ -154,7 +154,7 @@ def main(args):
 
     trainer.train()
 
-    nni.report_final_result(best_metric)
+    nni.report_final_result(best_metric * 100)
 
 def get_params():
     # Training settings
