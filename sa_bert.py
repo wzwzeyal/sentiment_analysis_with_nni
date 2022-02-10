@@ -89,9 +89,7 @@ class CommentsDataset(torch.utils.data.Dataset):
 
 def main(args):
 
-    nni.report_intermediate_result(0.12)
-
-    nni.report_intermediate_result(args['weight_decay'])
+    nni.report_intermediate_result(10.1234)
 
     use_cuda = not args['no_cuda'] and torch.cuda.is_available()
 
@@ -100,9 +98,9 @@ def main(args):
     device = torch.device("cuda" if use_cuda else "cpu")
 
     if torch.cuda.is_available():
-        nni.report_intermediate_result(0.13)
+        nni.report_intermediate_result(15.1234)
     else:
-        nni.report_intermediate_result(-50)
+        nni.report_intermediate_result(-5.1234)
     
 
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
@@ -118,7 +116,11 @@ def main(args):
     LABEL_COLUMN_NAME = "label"
     NUM_LABELS = 3
 
+    nni.report_intermediate_result(20.1234)
+
     tokenizer = BertTokenizerFast.from_pretrained(MODEL_CKPT)
+
+    nni.report_intermediate_result(21.1234)
 
     train_set_dataset = CommentsDataset(
         train_df[TEXT_COLUMN_NAME],
@@ -136,17 +138,18 @@ def main(args):
         save_strategy='epoch',
         load_best_model_at_end=True,
         metric_for_best_model='f1',
-        num_train_epochs=10,
+        num_train_epochs=args['epochs'],
         per_device_train_batch_size = 8,
         per_device_eval_batch_size  = 1,
         warmup_steps                = 10,
-        # weight_decay                = 0.01,
         weight_decay                = args['weight_decay'],
         fp16                        = True,
         logging_strategy            = 'epoch',
     )
 
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_CKPT, num_labels=NUM_LABELS)
+
+    nni.report_intermediate_result(22.1234)
 
     trainer = Trainer(
             model=model,
@@ -167,21 +170,12 @@ def get_params():
                         default='./data', help="data directory")
     parser.add_argument('--batch_size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
-    parser.add_argument("--batch_num", type=int, default=None)
-    parser.add_argument("--hidden_size", type=int, default=512, metavar='N',
-                        help='hidden layer size (default: 512)')
-    parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
-                        help='learning rate (default: 0.01)')
-    parser.add_argument('--momentum', type=float, default=0.5, metavar='M',
-                        help='SGD momentum (default: 0.5)')
-    parser.add_argument('--epochs', type=int, default=2, metavar='N',
-                        help='number of epochs to train (default: 10)')
+    parser.add_argument('--epochs', type=int, default=5, metavar='N',
+                        help='number of epochs to train (default: 5)')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
     parser.add_argument('--no_cuda', action='store_true', default=False,
                         help='disables CUDA training')
-    parser.add_argument('--log_interval', type=int, default=1000, metavar='N',
-                        help='how many batches to wait before logging training status')
     parser.add_argument('--weight_decay', type=int, default=0.01, metavar='N',
                         help='weight_decay')
     parser.add_argument('--model_ckpt', type=str,
@@ -202,10 +196,10 @@ if __name__ == '__main__':
         print(tuner_params)
         params = vars(merge_parameter(get_params(), tuner_params))
         print(params)
-        nni.report_intermediate_result(0.11)
+        nni.report_intermediate_result(5.1234)
         main(params)
     except Exception as exception:
         print(exception)
-        nni.report_intermediate_result(-99)
+        nni.report_intermediate_result(-10)
         logger.exception(exception)
         raise
