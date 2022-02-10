@@ -107,8 +107,9 @@ def main(args):
 
     data_dir = args['data_dir']
 
-    train_df = pd.read_csv('./data/for_sentiment/train_token_df.gz')#.head(100)
-    test_df = pd.read_csv('./data/for_sentiment/val_token_df.gz')#.head(10)
+    data_type = args['data_type']
+    train_df = pd.read_csv(f'./data/for_sentiment/train_{data_type}_df.gz').head(100)
+    test_df = pd.read_csv(f'./data/for_sentiment/val_{data_type}_df.gz').head(10)
 
     # MODEL_CKPT = "onlplab/alephbert-base"
     MODEL_CKPT = args["model_ckpt"]
@@ -145,6 +146,7 @@ def main(args):
         weight_decay                = args['weight_decay'],
         fp16                        = True,
         logging_strategy            = 'epoch',
+        learning_rate               = args['lr'],
     )
 
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_CKPT, num_labels=NUM_LABELS)
@@ -180,6 +182,8 @@ def get_params():
                         help='weight_decay')
     parser.add_argument('--model_ckpt', type=str,
                         default='onlplab/alephbert-base', help="data directory")
+    parser.add_argument('--data_type', type=str,
+                        default='morph', help="token or morph")
 
 
     args, _ = parser.parse_known_args()
