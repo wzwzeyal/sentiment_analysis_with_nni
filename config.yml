@@ -7,9 +7,10 @@ trialCommand: python3 sa_bert.py  # NOTE: change "python3" to "python" if you ar
 trialGpuNumber: 1
 trialConcurrency: 8
 tuner:
-  name: TPE
-  classArgs:
-    optimize_mode: maximize
+  # name: TPE
+  # classArgs:
+  #   optimize_mode: maximize
+  name: GridSearch
 trainingService:
   platform: local
   useActiveGpu: False
