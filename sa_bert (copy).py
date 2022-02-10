@@ -207,6 +207,7 @@ def get_params():
                         help='disables CUDA training')
     parser.add_argument('--log_interval', type=int, default=1000, metavar='N',
                         help='how many batches to wait before logging training status')
+                        
 
 
     args, _ = parser.parse_known_args()
