@@ -97,10 +97,10 @@ def main(args):
 
     device = torch.device("cuda" if use_cuda else "cpu")
 
-    if torch.cuda.is_available():
-        # nni.report_intermediate_result(15.1234)
-    else:
-        # nni.report_intermediate_result(-5.1234)
+    # if torch.cuda.is_available():
+    #     # nni.report_intermediate_result(15.1234)
+    # else:
+    #     # nni.report_intermediate_result(-5.1234)
     
 
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
