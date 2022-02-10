@@ -89,6 +89,12 @@ def main(args):
 
     device = torch.device("cuda" if use_cuda else "cpu")
 
+    if torch.cuda.is_available():
+        nni.report_intermediate_result(50)
+    else:
+        nni.report_intermediate_result(100)
+    
+
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
 
     data_dir = args['data_dir']
