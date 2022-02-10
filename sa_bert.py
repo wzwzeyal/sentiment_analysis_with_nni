@@ -93,9 +93,9 @@ def main(args):
     device = torch.device("cuda" if use_cuda else "cpu")
 
     if torch.cuda.is_available():
-        nni.report_intermediate_result(50)
-    else:
         nni.report_intermediate_result(100)
+    else:
+        nni.report_intermediate_result(50)
     
 
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
@@ -129,7 +129,7 @@ def main(args):
         load_best_model_at_end=True,
         metric_for_best_model='f1',
         num_train_epochs=10,
-        per_device_train_batch_size = 16,
+        per_device_train_batch_size = 8,
         per_device_eval_batch_size  = 1,
         warmup_steps                = 10,
         weight_decay                = 0.01,
