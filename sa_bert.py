@@ -102,18 +102,18 @@ def main(args):
     if torch.cuda.is_available():
         nni.report_intermediate_result(0.13)
     else:
-        nni.report_intermediate_result(0.0)
+        nni.report_intermediate_result(-50)
     
 
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
 
     data_dir = args['data_dir']
 
-    train_df = pd.read_csv('./data/for_sentiment/train_token_df.gz').head(100)
-    test_df = pd.read_csv('./data/for_sentiment/val_token_df.gz').head(10)
+    train_df = pd.read_csv('./data/for_sentiment/train_token_df.gz')#.head(100)
+    test_df = pd.read_csv('./data/for_sentiment/val_token_df.gz')#.head(10)
 
-    MODEL_CKPT = "onlplab/alephbert-base"
-    # MODEL_CKPT = args["model_ckpt"]
+    # MODEL_CKPT = "onlplab/alephbert-base"
+    MODEL_CKPT = args["model_ckpt"]
     TEXT_COLUMN_NAME = "comment"
     LABEL_COLUMN_NAME = "label"
     NUM_LABELS = 3
@@ -136,7 +136,7 @@ def main(args):
         save_strategy='epoch',
         load_best_model_at_end=True,
         metric_for_best_model='f1',
-        num_train_epochs=3,
+        num_train_epochs=10,
         per_device_train_batch_size = 8,
         per_device_eval_batch_size  = 1,
         warmup_steps                = 10,
@@ -184,6 +184,8 @@ def get_params():
                         help='how many batches to wait before logging training status')
     parser.add_argument('--weight_decay', type=int, default=0.01, metavar='N',
                         help='weight_decay')
+    parser.add_argument('--model_ckpt', type=str,
+                        default='onlplab/alephbert-base', help="data directory")
 
 
     args, _ = parser.parse_known_args()

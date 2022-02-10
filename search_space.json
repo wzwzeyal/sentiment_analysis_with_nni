@@ -1,3 +1,4 @@
 {
-    "weight_decay": {"_type":"choice", "_value": [0.001, 0.01, 0.1]}    
+    "weight_decay": {"_type":"choice", "_value": [0.001, 0.01, 0.1]},
+    "model_ckpt" : {"_type":"choice", "_value": ["onlplab/alephbert-base", "avichr/heBERT"]}    
 }
