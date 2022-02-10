@@ -178,12 +178,14 @@ def get_params():
                         help='random seed (default: 1)')
     parser.add_argument('--no_cuda', action='store_true', default=False,
                         help='disables CUDA training')
-    parser.add_argument('--weight_decay', type=int, default=0.01, metavar='N',
+    parser.add_argument('--weight_decay', type=float, default=0.01, metavar='N',
                         help='weight_decay')
     parser.add_argument('--model_ckpt', type=str,
                         default='onlplab/alephbert-base', help="data directory")
     parser.add_argument('--data_type', type=str,
                         default='morph', help="token or morph")
+    parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
+                    help='learning rate (default: 0.01)')
 
 
     args, _ = parser.parse_known_args()
