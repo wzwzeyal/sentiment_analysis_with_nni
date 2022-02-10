@@ -91,6 +91,8 @@ def main(args):
 
     nni.report_intermediate_result(0.12)
 
+    nni.report_intermediate_result(args['weight_decay'])
+
     use_cuda = not args['no_cuda'] and torch.cuda.is_available()
 
     torch.manual_seed(args['seed'])
@@ -110,8 +112,8 @@ def main(args):
     train_df = pd.read_csv('./data/for_sentiment/train_token_df.gz').head(100)
     test_df = pd.read_csv('./data/for_sentiment/val_token_df.gz').head(10)
 
-    # MODEL_CKPT = "onlplab/alephbert-base"
-    MODEL_CKPT = args["model_ckpt"]
+    MODEL_CKPT = "onlplab/alephbert-base"
+    # MODEL_CKPT = args["model_ckpt"]
     TEXT_COLUMN_NAME = "comment"
     LABEL_COLUMN_NAME = "label"
     NUM_LABELS = 3
@@ -180,6 +182,8 @@ def get_params():
                         help='disables CUDA training')
     parser.add_argument('--log_interval', type=int, default=1000, metavar='N',
                         help='how many batches to wait before logging training status')
+    parser.add_argument('--weight_decay', type=int, default=0.01, metavar='N',
+                        help='weight_decay')
 
 
     args, _ = parser.parse_known_args()
@@ -193,6 +197,7 @@ if __name__ == '__main__':
         print(torch.cuda.is_available())
         tuner_params = nni.get_next_parameter()
         logger.debug(tuner_params)
+        print(tuner_params)
         params = vars(merge_parameter(get_params(), tuner_params))
         print(params)
         nni.report_intermediate_result(0.11)
