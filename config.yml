@@ -4,7 +4,7 @@
 
 searchSpaceFile: search_space.json
 trialCommand: python3 sa_bert.py  # NOTE: change "python3" to "python" if you are using Windows
-trialGpuNumber: 1
+trialGpuNumber: 4
 trialConcurrency: 1
 tuner:
   name: TPE
