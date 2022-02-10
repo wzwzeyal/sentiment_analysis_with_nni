@@ -175,7 +175,7 @@ def get_params():
                         help='input batch size for training (default: 64)')
     parser.add_argument('--epochs', type=int, default=1, metavar='N',
                         help='number of epochs to train (default: 5)')
-    parser.add_argument('--seed', type=int, default=1, metavar='S',
+    parser.add_argument('--seed', type=int, default=20, metavar='S',
                         help='random seed (default: 1)')
     parser.add_argument('--no_cuda', action='store_true', default=False,
                         help='disables CUDA training')
