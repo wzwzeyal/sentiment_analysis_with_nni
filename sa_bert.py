@@ -49,6 +49,7 @@ def compute_metrics(pred):
     
     if metrics['f1'] > best_metric:
         best_metric = metrics['f1']
+        
     nni.report_intermediate_result(metrics['f1'] * 100)
     
     return metrics
