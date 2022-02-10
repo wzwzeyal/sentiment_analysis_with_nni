@@ -35,6 +35,7 @@ logger = logging.getLogger('sa_bert')
 best_metric = 0
 
 def compute_metrics(pred):
+    global best_metric
     labels = pred.label_ids
     preds = pred.predictions.argmax(-1)
     precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='weighted', labels=np.unique(pred.label_ids))
