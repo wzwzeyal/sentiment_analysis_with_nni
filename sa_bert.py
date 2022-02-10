@@ -32,6 +32,8 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trai
 
 logger = logging.getLogger('sa_bert')
 
+best_metric = 0
+
 def compute_metrics(pred):
     labels = pred.label_ids
     preds = pred.predictions.argmax(-1)
@@ -44,6 +46,8 @@ def compute_metrics(pred):
                 'recall': recall
                 }
     
+    if metrics['f1'] > best_metric:
+        best_metric = metrics['f1']
     nni.report_intermediate_result(metrics['f1'] * 100)
     
     return metrics
@@ -84,7 +88,7 @@ class CommentsDataset(torch.utils.data.Dataset):
 
 def main(args):
 
-    nni.report_intermediate_result(20)
+    nni.report_intermediate_result(0.12)
 
     use_cuda = not args['no_cuda'] and torch.cuda.is_available()
 
@@ -93,9 +97,9 @@ def main(args):
     device = torch.device("cuda" if use_cuda else "cpu")
 
     if torch.cuda.is_available():
-        nni.report_intermediate_result(100)
+        nni.report_intermediate_result(0.13)
     else:
-        nni.report_intermediate_result(50)
+        nni.report_intermediate_result(0.0)
     
 
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
@@ -149,7 +153,7 @@ def main(args):
 
     trainer.train()
 
-    nni.report_final_result(random.randrange(1,100))
+    nni.report_final_result(best_metric)
 
 def get_params():
     # Training settings
@@ -188,7 +192,7 @@ if __name__ == '__main__':
         logger.debug(tuner_params)
         params = vars(merge_parameter(get_params(), tuner_params))
         print(params)
-        nni.report_intermediate_result(10)
+        nni.report_intermediate_result(0.11)
         main(params)
     except Exception as exception:
         print(exception)
