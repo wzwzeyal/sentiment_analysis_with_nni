@@ -91,21 +91,21 @@ def main(args):
 
     # nni.report_intermediate_result(10.1234)
 
-    use_cuda = not args['no_cuda'] and torch.cuda.is_available()
+    # use_cuda = not args['no_cuda'] and torch.cuda.is_available()
 
-    torch.manual_seed(args['seed'])
+    # torch.manual_seed(args['seed'])
 
-    device = torch.device("cuda" if use_cuda else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # if torch.cuda.is_available():
-    #     # nni.report_intermediate_result(15.1234)
-    # else:
-    #     # nni.report_intermediate_result(-5.1234)
+    if torch.cuda.is_available():
+        nni.report_intermediate_result(15.1234)
+    else:
+        nni.report_intermediate_result(-5.1234)
     
 
-    kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
+    # kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
 
-    data_dir = args['data_dir']
+    # data_dir = args['data_dir']
 
     data_type = args['data_type']
     train_df = pd.read_csv(f'./data/for_sentiment/train_{data_type}_df.gz')#.head(100)
