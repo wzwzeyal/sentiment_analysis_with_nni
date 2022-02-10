@@ -196,5 +196,6 @@ if __name__ == '__main__':
         main(params)
     except Exception as exception:
         print(exception)
+        nni.report_intermediate_result(-99)
         logger.exception(exception)
         raise
