@@ -109,8 +109,8 @@ def main(args):
     # data_dir = args['data_dir']
 
     data_type = args['data_type']
-    train_df = pd.read_csv(f'./data/for_sentiment/train_{data_type}_df.gz')#.head(100)
-    test_df = pd.read_csv(f'./data/for_sentiment/val_{data_type}_df.gz')#.head(10)
+    train_df = pd.read_csv(f'./data/for_sentiment/train_{data_type}_df.gz').head(100)
+    test_df = pd.read_csv(f'./data/for_sentiment/val_{data_type}_df.gz').head(10)
 
     # MODEL_CKPT = "onlplab/alephbert-base"
     MODEL_CKPT = args["model_ckpt"]
@@ -173,7 +173,7 @@ def get_params():
                         default='./data', help="data directory")
     parser.add_argument('--batch_size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
-    parser.add_argument('--epochs', type=int, default=5, metavar='N',
+    parser.add_argument('--epochs', type=int, default=1, metavar='N',
                         help='number of epochs to train (default: 5)')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
