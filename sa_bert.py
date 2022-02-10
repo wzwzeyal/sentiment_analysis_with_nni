@@ -83,6 +83,9 @@ class CommentsDataset(torch.utils.data.Dataset):
 
 
 def main(args):
+
+    nni.report_intermediate_result(20)
+
     use_cuda = not args['no_cuda'] and torch.cuda.is_available()
 
     torch.manual_seed(args['seed'])
@@ -185,6 +188,7 @@ if __name__ == '__main__':
         logger.debug(tuner_params)
         params = vars(merge_parameter(get_params(), tuner_params))
         print(params)
+        nni.report_intermediate_result(10)
         main(params)
     except Exception as exception:
         print(exception)
