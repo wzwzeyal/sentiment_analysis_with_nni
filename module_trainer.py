@@ -13,15 +13,17 @@ import nni
 
 class bert_classifier_trainer():
     def __init__(self,
-     max_len, 
-     batch_size, 
-     bert_model_name, 
-     best_model_name, 
-     lr=5e-5,
-     eps=1e-8,
-     wd=0.01
-     freeze_bert=False, 
-     epochs=4):
+                max_len, 
+                batch_size, 
+                bert_model_name, 
+                best_model_name, 
+                lr=5e-5,
+                eps=1e-8,
+                wd=0.01,
+                freeze_bert=False, 
+                epochs=4,
+    ):
+
         self.max_len  = max_len
         self.batch_size = batch_size
         self.bert_model_name = bert_model_name#initialize_model(bert_model_name, epochs)
