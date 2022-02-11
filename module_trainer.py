@@ -230,8 +230,6 @@ class bert_classifier_trainer():
             # Calculate the average loss over the entire training data
             avg_train_loss = total_loss / len(self.train_dataloader)
 
-            report_inter(avg_train_loss)
-
             print("-"*70)
             # =======================================
             #               Evaluation
@@ -241,7 +239,7 @@ class bert_classifier_trainer():
                 # on our validation set.
                 val_loss, val_accuracy, f1 = self.evaluate()
 
-                nni.report_intermediate_result(val_accuracy)
+                report_inter(val_accuracy)
 
                 # Print performance over the entire training data
                 time_elapsed = time.time() - t0_epoch

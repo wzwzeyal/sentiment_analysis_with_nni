@@ -29,10 +29,10 @@ def main(args):
     train_df = pd.read_csv(f'{data_dir}/train_{data_type}_df.gz')#.head(100)
     test_df = pd.read_csv(f'{data_dir}/val_{data_type}_df.gz')#.head(10)
 
-    X_train = train_df.comment_clean.values
+    X_train = train_df[args['col_name']].values
     y_train = train_df.label.values
 
-    X_val = test_df.comment_clean.values
+    X_val = test_df[args['col_name']].values
     y_val = test_df.label.values
 
     max_len=args['max_len']
@@ -55,7 +55,7 @@ def get_params():
     parser.add_argument("--max_len", type=int,
                         default=130, help="max_len")
     parser.add_argument("--batch_size", type=int,
-                        default=32, help="batch size")
+                        default=48, help="batch size")
     parser.add_argument("--data_dir", type=str,
                         default='./data/for_sentiment', help="data directory")
     parser.add_argument('--epochs', type=int, default=5, metavar='N',
@@ -66,6 +66,8 @@ def get_params():
                         default='onlplab/alephbert-base', help="data directory")
     parser.add_argument('--data_type', type=str,
                         default='morph', help="token or morph")
+    parser.add_argument('--col_name', type=str,
+                        default='comment', help="comment or comment_clean")
     parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
                     help='learning rate (default: 0.01)')
 
