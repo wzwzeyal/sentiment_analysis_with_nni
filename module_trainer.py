@@ -8,7 +8,6 @@ from module import BertClassifierModule
 from torch.utils.tensorboard import SummaryWriter
 from sklearn.metrics import f1_score
 import time
-import nni
 
 
 class bert_classifier_trainer():
@@ -142,7 +141,7 @@ class bert_classifier_trainer():
         return val_loss, val_accuracy, f1
 
     #def train(model, train_dataloader, val_dataloader=None, epochs=4, evaluation=False):
-    def train(self, epochs=4, evaluation=False):
+    def train(self, report_inter, report_final, epochs=4, evaluation=False, ):
         """Train the BertClassifier model.
         """
         # Start training loop
@@ -219,7 +218,7 @@ class bert_classifier_trainer():
             # Calculate the average loss over the entire training data
             avg_train_loss = total_loss / len(self.train_dataloader)
 
-            nni.report_intermediate_result(avg_train_loss)
+            report_inter(avg_train_loss)
 
             print("-"*70)
             # =======================================
@@ -230,7 +229,7 @@ class bert_classifier_trainer():
                 # on our validation set.
                 val_loss, val_accuracy, f1 = self.evaluate()
 
-                nni.report_intermediate_result(val_accuracy * 100)
+                nni.report_intermediate_result(val_accuracy)
 
                 # Print performance over the entire training data
                 time_elapsed = time.time() - t0_epoch
@@ -246,7 +245,7 @@ class bert_classifier_trainer():
                 #-- Save best model (early stopping):
                 if val_accuracy > best_accuracy:
                     best_accuracy = val_accuracy
-                    nni.report_final_result(val_accuracy * 100)
+                    report_final(val_accuracy)
                     filename = f'{self.best_model_name}_{val_accuracy:^9.2f}.pt'
                     torch.save(self.bert_classifier.state_dict(), filename)
                     print(' <-- Checkpoint !')

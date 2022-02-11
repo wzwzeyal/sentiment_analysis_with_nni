@@ -22,7 +22,6 @@ logger = logging.getLogger('sa_bert')
 
 def main(args):
 
-    nni.report_intermediate_result('test')
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     data_dir = args['data_dir']
@@ -36,21 +35,27 @@ def main(args):
     X_val = test_df.comment_clean.values
     y_val = test_df.label.values
 
-    MAX_LEN=130
-    batch_size=32
+    max_len=args['max_len']
+    batch_size=args['batch_size']
     bert_model_name = args['model_ckpt']
     best_model_name = args['data_type']
 
-    bert_classifier = bert_classifier_trainer(MAX_LEN, batch_size, bert_model_name, best_model_name=best_model_name)
+    bert_classifier = bert_classifier_trainer(max_len, batch_size, bert_model_name, best_model_name=best_model_name)
     bert_classifier.initialize_train_data(X_train, y_train)
     bert_classifier.initialize_val_data(X_val, y_val)
-    best_model, best_acc = bert_classifier.train(epochs=args['epochs'], evaluation=True)
-
-    nni.report_final_result(best_acc * 100)
+    best_model, best_acc = bert_classifier.train(
+        nni.report_intermediate_result,
+        nni.report_final_result,
+        epochs=args['epochs'],
+        evaluation=True)
 
 def get_params():
     # Training settings
-    parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
+    parser = argparse.ArgumentParser(description='finetune sa')
+    parser.add_argument("--max_len", type=int,
+                        default=130, help="max_len")
+    parser.add_argument("--batch_size", type=int,
+                        default=32, help="batch size")
     parser.add_argument("--data_dir", type=str,
                         default='./data/for_sentiment', help="data directory")
     parser.add_argument('--epochs', type=int, default=5, metavar='N',
