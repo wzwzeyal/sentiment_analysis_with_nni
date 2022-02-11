@@ -8,6 +8,7 @@ from module import BertClassifierModule
 from torch.utils.tensorboard import SummaryWriter
 from sklearn.metrics import f1_score
 import time
+import nni
 
 
 class bert_classifier_trainer():
