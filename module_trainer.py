@@ -96,6 +96,7 @@ class bert_classifier_trainer():
 
 
     def initialize_train_data(self, X_train, y_train):
+        X_train = [elem[:self.max_len] for elem in X_train]
         train_inputs, train_masks = self.preprocessing_for_bert(X_train)
         train_labels = torch.tensor(y_train)
 
@@ -105,6 +106,7 @@ class bert_classifier_trainer():
         self.train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=self.batch_size)
 
     def initialize_val_data(self, X_val, y_val):
+        X_val = [elem[:self.max_len] for elem in X_val]
         val_inputs, val_masks = self.preprocessing_for_bert(X_val)
         val_labels = torch.tensor(y_val)
 
