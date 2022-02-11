@@ -18,7 +18,7 @@ from transformers import AutoModelForSequenceClassification, TrainingArguments, 
 from module_trainer import bert_classifier_trainer
 
 
-logger = logging.getLogger('sa_bert')
+logger = logging.getLogger('finetune_sa_bert')
 
 def main(args):
 
