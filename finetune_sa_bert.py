@@ -53,7 +53,7 @@ def get_params():
     # Training settings
     parser = argparse.ArgumentParser(description='finetune sa')
     parser.add_argument("--max_len", type=int,
-                        default=150, help="max_len")
+                        default=128, help="max_len")
     parser.add_argument("--batch_size", type=int,
                         default=64, help="batch size")
     parser.add_argument("--data_dir", type=str,
