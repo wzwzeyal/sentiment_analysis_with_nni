@@ -55,7 +55,7 @@ def get_params():
     parser.add_argument("--max_len", type=int,
                         default=150, help="max_len")
     parser.add_argument("--batch_size", type=int,
-                        default=52, help="batch size")
+                        default=64, help="batch size")
     parser.add_argument("--data_dir", type=str,
                         default='./data/for_sentiment', help="data directory")
     parser.add_argument('--epochs', type=int, default=5, metavar='N',
