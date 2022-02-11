@@ -26,8 +26,8 @@ def main(args):
 
     data_dir = args['data_dir']
     data_type = args['data_type']
-    train_df = pd.read_csv(f'{data_dir}/train_{data_type}_df.gz').head(100)
-    test_df = pd.read_csv(f'{data_dir}/val_{data_type}_df.gz').head(10)
+    train_df = pd.read_csv(f'{data_dir}/train_{data_type}_df.gz')#.head(100)
+    test_df = pd.read_csv(f'{data_dir}/val_{data_type}_df.gz')#.head(10)
 
     X_train = train_df.comment_clean.values
     y_train = train_df.label.values

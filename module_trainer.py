@@ -12,7 +12,16 @@ import nni
 
 
 class bert_classifier_trainer():
-    def __init__(self, max_len, batch_size, bert_model_name, best_model_name, freeze_bert=False, epochs=4):
+    def __init__(self,
+     max_len, 
+     batch_size, 
+     bert_model_name, 
+     best_model_name, 
+     lr=5e-5,
+     eps=1e-8,
+     wd=0.01
+     freeze_bert=False, 
+     epochs=4):
         self.max_len  = max_len
         self.batch_size = batch_size
         self.bert_model_name = bert_model_name#initialize_model(bert_model_name, epochs)
@@ -31,9 +40,9 @@ class bert_classifier_trainer():
 
         # Create the optimizer
         self.optimizer = AdamW(self.bert_classifier.parameters(),
-                        lr=5e-5,    # Default learning rate
-                        eps=1e-8    # Default epsilon value
-                        )
+                        lr=lr,    # Default learning rate
+                        eps=eps,    # Default epsilon value
+                        weight_decay=wd)
         
     # Create a function to tokenize a set of texts
     def preprocessing_for_bert(self, data):
@@ -224,7 +233,7 @@ class bert_classifier_trainer():
             print("-"*70)
             # =======================================
             #               Evaluation
-            # =======================================
+            # =======================================   
             if evaluation == True:
                 # After the completion of each training epoch, measure the model's performance
                 # on our validation set.
