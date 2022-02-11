@@ -53,9 +53,9 @@ def get_params():
     # Training settings
     parser = argparse.ArgumentParser(description='finetune sa')
     parser.add_argument("--max_len", type=int,
-                        default=130, help="max_len")
+                        default=150, help="max_len")
     parser.add_argument("--batch_size", type=int,
-                        default=48, help="batch size")
+                        default=52, help="batch size")
     parser.add_argument("--data_dir", type=str,
                         default='./data/for_sentiment', help="data directory")
     parser.add_argument('--epochs', type=int, default=5, metavar='N',
