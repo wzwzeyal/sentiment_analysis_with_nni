@@ -15,6 +15,8 @@ import numpy as np
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score, classification_report
 from datasets import load_dataset, DatasetDict, Dataset
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer, BertTokenizerFast
+from module_trainer import bert_classifier_trainer
+
 
 logger = logging.getLogger('sa_bert')
 
@@ -79,53 +81,24 @@ def main(args):
 
     data_dir = args['data_dir']
     data_type = args['data_type']
-    train_df = pd.read_csv(f'{data_dir}/train_{data_type}_df.gz')#.head(100)
-    test_df = pd.read_csv(f'{data_dir}/val_{data_type}_df.gz')#.head(10)
+    train_df = pd.read_csv(f'{data_dir}/train_{data_type}_df.gz').head(100)
+    test_df = pd.read_csv(f'{data_dir}/val_{data_type}_df.gz').head(10)
 
-    MODEL_CKPT = args["model_ckpt"]
-    TEXT_COLUMN_NAME = "comment"
-    LABEL_COLUMN_NAME = "label"
-    NUM_LABELS = 3
+    X_train = train_df.comment_clean.values
+    y_train = train_df.label.values
 
-    tokenizer = BertTokenizerFast.from_pretrained(MODEL_CKPT)
+    X_val = test_df.comment_clean.values
+    y_val = test_df.label.values
 
-    train_set_dataset = CommentsDataset(
-        train_df[TEXT_COLUMN_NAME],
-        train_df[LABEL_COLUMN_NAME],
-        tokenizer)
-    
-    test_set_dataset = CommentsDataset(
-        test_df[TEXT_COLUMN_NAME],
-        test_df[LABEL_COLUMN_NAME],
-        tokenizer)
+    MAX_LEN=130
+    batch_size=32
+    bert_model_name = args['model_ckpt']
+    best_model_name = args['data_type']
 
-    training_args = TrainingArguments(
-        'MODEL_CKPT__',
-        evaluation_strategy='epoch',
-        save_strategy='epoch',
-        # load_best_model_at_end=True,
-        metric_for_best_model='f1',
-        num_train_epochs=args['epochs'],
-        per_device_train_batch_size = 8,
-        per_device_eval_batch_size  = 1,
-        warmup_steps                = 10,
-        weight_decay                = args['weight_decay'],
-        fp16                        = True,
-        logging_strategy            = 'epoch',
-        learning_rate               = args['lr'],
-    )
-
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_CKPT, num_labels=NUM_LABELS)
-
-    trainer = Trainer(
-            model=model,
-            args=training_args, 
-            train_dataset = train_set_dataset,
-            eval_dataset = test_set_dataset,
-            compute_metrics=compute_metrics,
-    )
-
-    trainer.train()
+    bert_classifier = bert_classifier_trainer(MAX_LEN, batch_size, bert_model_name, best_model_name=best_model_name)
+    bert_classifier.initialize_train_data(X_train, y_train)
+    bert_classifier.initialize_val_data(X_val, y_val)
+    best_model = bert_classifier.train(epochs=1, evaluation=True)
 
     nni.report_final_result(best_metric * 100)
 

@@ -85,7 +85,7 @@ class bert_classifier_trainer():
 
     def initialize_train_data(self, X_train, y_train):
         train_inputs, train_masks = self.preprocessing_for_bert(X_train)
-        train_labels = torch.tensor(y_train.values)
+        train_labels = torch.tensor(y_train)
 
         # Create the DataLoader for our training set
         train_data = TensorDataset(train_inputs, train_masks, train_labels)
@@ -94,7 +94,7 @@ class bert_classifier_trainer():
 
     def initialize_val_data(self, X_val, y_val):
         val_inputs, val_masks = self.preprocessing_for_bert(X_val)
-        val_labels = torch.tensor(y_val.values)
+        val_labels = torch.tensor(y_val)
 
         # Create the DataLoader for our validation set
         val_data = TensorDataset(val_inputs, val_masks, val_labels)
