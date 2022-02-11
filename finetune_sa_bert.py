@@ -20,63 +20,9 @@ from module_trainer import bert_classifier_trainer
 
 logger = logging.getLogger('sa_bert')
 
-best_metric = 0
-
-def compute_metrics(pred):
-    global best_metric
-    labels = pred.label_ids
-    preds = pred.predictions.argmax(-1)
-    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='weighted', labels=np.unique(pred.label_ids))
-    acc = accuracy_score(labels, preds)
-    metrics =  {
-                'accuracy': acc,
-                'f1': f1,
-                'precision': precision,
-                'recall': recall
-                }
-    
-    if metrics['f1'] > best_metric:
-        best_metric = metrics['f1']
-
-    nni.report_intermediate_result(metrics['f1'] * 100)
-    
-    return metrics
-
-# Create The Dataset Class.
-class CommentsDataset(torch.utils.data.Dataset):
-
-    def __init__(self, reviews, sentiments, tokenizer):
-        self.reviews    = reviews
-        self.sentiments = sentiments
-        self.tokenizer  = tokenizer
-        self.max_len    = tokenizer.model_max_length
-  
-    def __len__(self):
-        return len(self.reviews)
-  
-    def __getitem__(self, index):
-        review = str(self.reviews[index])
-        sentiments = self.sentiments[index]
-
-        encoded_review = self.tokenizer.encode_plus(
-            review,
-            add_special_tokens    = True,
-            max_length            = 512,
-            return_token_type_ids = False,
-            return_attention_mask = True,
-            return_tensors        = "pt",
-            padding               = "max_length",
-            truncation            = True
-        )
-
-        return {
-            'input_ids': encoded_review['input_ids'][0],
-            'attention_mask': encoded_review['attention_mask'][0],
-            'labels': torch.tensor(sentiments, dtype=torch.long)
-        }
-
-
 def main(args):
+
+    nni.report_intermediate_result('test')
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     data_dir = args['data_dir']
@@ -98,9 +44,9 @@ def main(args):
     bert_classifier = bert_classifier_trainer(MAX_LEN, batch_size, bert_model_name, best_model_name=best_model_name)
     bert_classifier.initialize_train_data(X_train, y_train)
     bert_classifier.initialize_val_data(X_val, y_val)
-    best_model = bert_classifier.train(epochs=1, evaluation=True)
+    best_model, best_acc = bert_classifier.train(epochs=args['epochs'], evaluation=True)
 
-    nni.report_final_result(best_metric * 100)
+    nni.report_final_result(best_acc * 100)
 
 def get_params():
     # Training settings
