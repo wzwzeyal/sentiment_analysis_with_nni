@@ -1,6 +1,5 @@
 {
-    "model_ckpt" : {"_type":"choice", "_value": ["onlplab/alephbert-base", "avichr/heBERT"]},    
-    "data_type" : {"_type":"choice", "_value": ["token", "morph"]},
-
-    "col_name" : {"_type":"choice", "_value": ["comment", "comment_clean"]}       
+    "col_name" : {"_type":"choice", "_value": ["comment", "comment_clean"]},  
+    "model_ckpt" : {"_type":"choice", "_value": ["avichr/heBERT", "onlplab/alephbert-base"]},   
+    "data_type" : {"_type":"choice", "_value": ["morph", "token"]}  
 }
