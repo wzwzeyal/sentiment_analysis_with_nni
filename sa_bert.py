@@ -89,40 +89,19 @@ class CommentsDataset(torch.utils.data.Dataset):
 
 
 def main(args):
-
-    # nni.report_intermediate_result(10.1234)
-
-    # use_cuda = not args['no_cuda'] and torch.cuda.is_available()
-
-    # torch.manual_seed(args['seed'])
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # if torch.cuda.is_available():
-    #     nni.report_intermediate_result(15.1234)
-    # else:
-    #     nni.report_intermediate_result(-5.1234)
-    
-
-    # kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
-
-    # data_dir = args['data_dir']
-
+    data_dir = args['data_dir']
     data_type = args['data_type']
-    train_df = pd.read_csv(f'./data/for_sentiment/train_{data_type}_df.gz')#.head(100)
-    test_df = pd.read_csv(f'./data/for_sentiment/val_{data_type}_df.gz')#.head(10)
+    train_df = pd.read_csv(f'{data_dir}/train_{data_type}_df.gz')#.head(100)
+    test_df = pd.read_csv(f'{data_dir}/val_{data_type}_df.gz')#.head(10)
 
-    # MODEL_CKPT = "onlplab/alephbert-base"
     MODEL_CKPT = args["model_ckpt"]
     TEXT_COLUMN_NAME = "comment"
     LABEL_COLUMN_NAME = "label"
     NUM_LABELS = 3
 
-    # nni.report_intermediate_result(20.1234)
-
     tokenizer = BertTokenizerFast.from_pretrained(MODEL_CKPT)
-
-    # nni.report_intermediate_result(21.1234)
 
     train_set_dataset = CommentsDataset(
         train_df[TEXT_COLUMN_NAME],
@@ -152,8 +131,6 @@ def main(args):
 
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_CKPT, num_labels=NUM_LABELS)
 
-    # nni.report_intermediate_result(22.1234)
-
     trainer = Trainer(
             model=model,
             args=training_args, 
@@ -170,15 +147,9 @@ def get_params():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
     parser.add_argument("--data_dir", type=str,
-                        default='./data', help="data directory")
-    parser.add_argument('--batch_size', type=int, default=64, metavar='N',
-                        help='input batch size for training (default: 64)')
+                        default='./data/for_sentiment', help="data directory")
     parser.add_argument('--epochs', type=int, default=5, metavar='N',
                         help='number of epochs to train (default: 5)')
-    parser.add_argument('--seed', type=int, default=20, metavar='S',
-                        help='random seed (default: 1)')
-    parser.add_argument('--no_cuda', action='store_true', default=False,
-                        help='disables CUDA training')
     parser.add_argument('--weight_decay', type=float, default=0.01, metavar='N',
                         help='weight_decay')
     parser.add_argument('--model_ckpt', type=str,
